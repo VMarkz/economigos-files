@@ -1,0 +1,4 @@
+00EXTRATO09-06-2021 16:42:3401
+03Renda0000999,99Esse dia eu fiquei rico                           2021-01-01 00:00:00Dívidas                  Conta          
+02Gasto0003000,99Netflix                                           2021-03-02 00:00:00Cuidados Pessoais        Conta          
+010000000002

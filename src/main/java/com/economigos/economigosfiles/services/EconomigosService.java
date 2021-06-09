@@ -1,12 +1,15 @@
 package com.economigos.economigosfiles.services;
 
-import com.economigos.economigosfiles.dtos.CategoriaDto;
-import com.economigos.economigosfiles.dtos.ContaDto;
-import com.economigos.economigosfiles.dtos.UltimasAtividades;
+import com.economigos.economigosfiles.dtos.*;
 import com.economigos.economigosfiles.form.GastoForm;
 import com.economigos.economigosfiles.form.RendaForm;
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
 
 @Service
 public class EconomigosService {
@@ -17,10 +20,18 @@ public class EconomigosService {
         if (System.getenv("SERVICE_URL") != null){
             baseUrl = System.getenv("SERVICE_URL");
         }else{
-            baseUrl = "http://ec2-34-236-53-23.compute-1.amazonaws.com:8080/";
+            //baseUrl = "http://ec2-34-236-53-23.compute-1.amazonaws.com:8080";
+            baseUrl = "http://localhost:8080";
         }
 
         return baseUrl;
+    }
+
+    public static QroFeriasDto requestLancamentosByUsuario(Long idUsuario){
+        RestTemplate restTemplate = new RestTemplate();
+        QroFeriasDto qroFeriasDto = restTemplate.getForObject( getBaseUrl() + "/economigos/usuarios/lancamentos?idUsuario="+idUsuario, QroFeriasDto.class);
+
+        return qroFeriasDto;
     }
 
     public static UltimasAtividades requestContaById(Long idUsuario, Long idConta){

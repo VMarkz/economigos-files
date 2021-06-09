@@ -1,11 +1,11 @@
 package com.economigos.economigosfiles.controllers;
 
 import com.economigos.economigosfiles.dtos.ContabilUltimasAtividades;
+import com.economigos.economigosfiles.dtos.QroFeriasDto;
 import com.economigos.economigosfiles.dtos.UltimasAtividades;
 import com.economigos.economigosfiles.models.Imagem;
 import com.economigos.economigosfiles.repositories.AnexoRepository;
 import com.economigos.economigosfiles.repositories.ImagemRepository;
-import com.economigos.economigosfiles.services.EconomigosClient;
 import com.economigos.economigosfiles.services.EconomigosService;
 import com.economigos.economigosfiles.utils.fileio.GravaArquivo;
 import com.economigos.economigosfiles.utils.fileio.LeArquivo;
@@ -34,15 +34,13 @@ public class FileController {
     AnexoRepository anexoRepository;
     @Autowired
     ImagemRepository imagemRepository;
-    @Autowired
-    EconomigosClient economigosClient;
 
     @GetMapping("/export/{idConta}")
     @Transactional
     public ResponseEntity<Resource> getExtrato(@RequestParam Long idUsuario,
                                                @PathVariable Long idConta,
                                                @RequestParam Boolean csvFile) throws FileNotFoundException {
-        UltimasAtividades ultimasAtividades = economigosService.requestContaById(idUsuario, idConta);
+        UltimasAtividades ultimasAtividades = EconomigosService.requestContaById(idUsuario, idConta);
 
         List<ContabilUltimasAtividades> atividadesList = ultimasAtividades.getContabilUltimasAtividadesDtos();
 
@@ -87,11 +85,11 @@ public class FileController {
     public ResponseEntity<Resource> getExtrato(@RequestParam Long idUsuario,
                                                @RequestParam Boolean csvFile) throws FileNotFoundException {
 
-        List<ContabilUltimasAtividades> atividadesList = economigosClient.get(idUsuario);
+        QroFeriasDto a = EconomigosService.requestLancamentosByUsuario(idUsuario);
+
+        List<ContabilUltimasAtividades> atividadesList = a.getContabilUltimasAtividadesDtos();
 
         int tamanhoRetorno = atividadesList.size();
-
-        Collections.sort(atividadesList);
 
         PilhaObj<ContabilUltimasAtividades> ultimasAtividadesPilhaObj = new PilhaObj<>(tamanhoRetorno);
 
