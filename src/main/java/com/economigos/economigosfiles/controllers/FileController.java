@@ -5,6 +5,7 @@ import com.economigos.economigosfiles.dtos.UltimasAtividades;
 import com.economigos.economigosfiles.models.Imagem;
 import com.economigos.economigosfiles.repositories.AnexoRepository;
 import com.economigos.economigosfiles.repositories.ImagemRepository;
+import com.economigos.economigosfiles.services.EconomigosClient;
 import com.economigos.economigosfiles.services.EconomigosService;
 import com.economigos.economigosfiles.utils.fileio.GravaArquivo;
 import com.economigos.economigosfiles.utils.fileio.LeArquivo;
@@ -33,6 +34,8 @@ public class FileController {
     AnexoRepository anexoRepository;
     @Autowired
     ImagemRepository imagemRepository;
+    @Autowired
+    EconomigosClient economigosClient;
 
     @GetMapping("/export/{idConta}")
     @Transactional
@@ -78,6 +81,50 @@ public class FileController {
 
         return ResponseEntity.badRequest().build();
     }
+
+    @GetMapping("/export")
+    @Transactional
+    public ResponseEntity<Resource> getExtrato(@RequestParam Long idUsuario,
+                                               @RequestParam Boolean csvFile) throws FileNotFoundException {
+
+        List<ContabilUltimasAtividades> atividadesList = economigosClient.get(idUsuario);
+
+        int tamanhoRetorno = atividadesList.size();
+
+        Collections.sort(atividadesList);
+
+        PilhaObj<ContabilUltimasAtividades> ultimasAtividadesPilhaObj = new PilhaObj<>(tamanhoRetorno);
+
+        String fileName = "extrato";
+
+        if (tamanhoRetorno > 0) {
+            for (ContabilUltimasAtividades contabilUltimasAtividades : atividadesList) {
+                ultimasAtividadesPilhaObj.push(contabilUltimasAtividades);
+            }
+            try {
+                GravaArquivo.gravaPilha(ultimasAtividadesPilhaObj, fileName, csvFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            InputStreamResource resource = new InputStreamResource(new FileInputStream(GravaArquivo.getFile()));
+
+            if (GravaArquivo.getFile().getName().endsWith(".csv")){
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName + ".csv")
+                        .contentType(MediaType.parseMediaType("application/csv"))
+                        .body(resource);
+            }else{
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName + ".txt")
+                        .contentType(MediaType.parseMediaType("application/txt"))
+                        .body(resource);
+            }
+        }
+
+        return ResponseEntity.badRequest().build();
+    }
+
 
     @PostMapping("/import")
     @Transactional
