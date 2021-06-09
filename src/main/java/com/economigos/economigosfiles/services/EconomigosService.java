@@ -2,13 +2,20 @@ package com.economigos.economigosfiles.services;
 
 import com.economigos.economigosfiles.dtos.CategoriaDto;
 import com.economigos.economigosfiles.dtos.ContaDto;
+import com.economigos.economigosfiles.dtos.ContabilUltimasAtividades;
 import com.economigos.economigosfiles.dtos.UltimasAtividades;
 import com.economigos.economigosfiles.form.GastoForm;
 import com.economigos.economigosfiles.form.RendaForm;
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+
 @Service
+@FeignClient("http://localhost:8080/economigos/")
 public class EconomigosService {
 
     public static String getBaseUrl(){
@@ -22,6 +29,9 @@ public class EconomigosService {
 
         return baseUrl;
     }
+
+    @GetMapping("/usuario/lancamentos")
+    public static List<ContabilUltimasAtividades> getLancamentosByUsuario(@RequestParam Long idUsuario)
 
     public static UltimasAtividades requestContaById(Long idUsuario, Long idConta){
         RestTemplate restTemplate = new RestTemplate();
