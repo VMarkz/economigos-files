@@ -3,13 +3,8 @@ package com.economigos.economigosfiles.services;
 import com.economigos.economigosfiles.dtos.*;
 import com.economigos.economigosfiles.form.GastoForm;
 import com.economigos.economigosfiles.form.RendaForm;
-import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.List;
 
 @Service
 public class EconomigosService {
